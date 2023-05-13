@@ -8,14 +8,14 @@ public static class ExceptionEnricherExtensions
 {
     public static LoggerConfiguration WithExceptionDetail(
         this LoggerEnrichmentConfiguration configuration,
-        Func<LoggerConfiguration, CommonExceptionPropertiesDestructurer, LoggerConfiguration>? exceptionDestructuringConfig = null,
+        Func<LoggerConfiguration, CommonExceptionPropertiesDestructurer, LoggerConfiguration>? loggerConfigFunc = null,
         CommonExceptionPropertiesDestructurer? customExceptionDestructuringPolicy = null,
         bool skipDestructuringSetup = false)
     {
-        if (skipDestructuringSetup && (customExceptionDestructuringPolicy != null || exceptionDestructuringConfig != null))
+        if (skipDestructuringSetup && (customExceptionDestructuringPolicy != null || loggerConfigFunc != null))
         {
             throw new ArgumentException(
-                $"{nameof(skipDestructuringSetup)} set to true, but a {nameof(customExceptionDestructuringPolicy)} and/or {nameof(exceptionDestructuringConfig)} value also provided. These values would have been ignored. Either exclude them or don't set {nameof(skipDestructuringSetup)} to true");
+                $"{nameof(skipDestructuringSetup)} set to true, but a {nameof(customExceptionDestructuringPolicy)} and/or {nameof(loggerConfigFunc)} value also provided. These values would have been ignored. Either exclude them or don't set {nameof(skipDestructuringSetup)} to true");
         }
 
         var config = configuration.With(new ExceptionEnricher());
@@ -28,7 +28,7 @@ public static class ExceptionEnricherExtensions
         var commonDestructureFunc = customExceptionDestructuringPolicy ?? DestructureCommonExceptionProperties;
 
         // Make sure we execute consumer-provided destructuring BEFORE our fallback Exception destructurer.
-        config = exceptionDestructuringConfig?.Invoke(config, commonDestructureFunc) ?? config;
+        config = loggerConfigFunc?.Invoke(config, commonDestructureFunc) ?? config;
 
         config = config
             // A fallback exception destructurer. Any unregistered exception types will be destructured according to this.

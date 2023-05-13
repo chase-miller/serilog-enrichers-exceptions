@@ -1,6 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A64620E5-6F5D-4F40-82AD-70BFC5B425ED}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Enrichers.Exceptions", "src\Serilog.Enrichers.Exceptions\Serilog.Enrichers.Exceptions.csproj", "{9EA1CA8F-0A39-43EC-BF88-88D6F5E4B20C}"
 EndProject

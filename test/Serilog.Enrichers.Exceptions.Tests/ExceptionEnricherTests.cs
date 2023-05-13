@@ -15,8 +15,8 @@ public class ExceptionEnricherTests
         LogEvent? evt = null;
 
         var log = new LoggerConfiguration()
-            .Enrich.WithExceptionDetail(exceptionDestructuringConfig: (config, ct) => config
-                .Destructure.ByTransformingException<MyCoolException>(ct, x => new
+            .Enrich.WithExceptionDetail(loggerConfigFunc: (config, cept) => config
+                .Destructure.ByTransformingException<MyCoolException>(cept, x => new
                 {
                     x.MyCoolProp,
                 }))
