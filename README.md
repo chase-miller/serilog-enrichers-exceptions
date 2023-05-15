@@ -17,7 +17,7 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithExceptionDetail(loggerConfigFunc: (config, cept) => config
         // --- The following are standard Serilog LoggerConfiguration registrations. You can choose to do this outside this method if you wish.
         .Destructure.AllDictionaryTypesAsStructured() // Ensure Data prop outputs as an object over an array of KVPs
-        .Destructure.CommonExceptions(cet)            // Handle common well-known exceptions
+        .Destructure.CommonExceptions(cept)           // Handle common, well-known exceptions
     .CreateLogger();
 ```
 
@@ -49,7 +49,7 @@ Register your own exception destructuring:
 Log.Logger = new LoggerConfiguration()
     .Enrich.WithExceptionDetail(loggerConfigFunc: (config, cept) => config
         .Destructure.AllDictionaryTypesAsStructured()
-        .Destructure.CommonExceptions(cet)
+        .Destructure.CommonExceptions(cept)
         
         // --- Add registrations for whatever additional exception types you like
         // ByTransformingException ensures a consistent format for all exception types
@@ -60,12 +60,29 @@ Log.Logger = new LoggerConfiguration()
         // Or destructure exception types as you would any other type. You have complete control.
         .Destructure.ByTransforming<MyOtherException>(x => new
         {
+            // Manually add these common Exception props. Note that ByTransformingException() will do this for you.
+            x.Data,
+            x.HResult,
+            x.Message,
+            x.Source,
+            x.StackTrace,
+            x.TargetSite,
+            Type = x.GetType(),
+            x.InnerException,
+            
+            // props unique to MyOtherException
             x.SomeProp
         })
         // Use any Serilog destructuring hook you like, including any IDestructuringPolicy instance
         .Destructure.With(new MyDestructuringPolicy())
     .CreateLogger();
 ```
+
+Why setup destructuring within `WithExceptionDetail` instead of directly on `LoggerConfiguration`? There are two reasons:
+1. It ensures that all unregistered Exception types are destructured into the same object structured by registring a fallback Exception destructurer last. 
+2. It provides a `CommonExceptionPropertiesDestructurer` to send to `ByTransformingException()`. This ensures a consistent object structure.
+
+#### Other Customization Examples
 
 Let Serilog destructure using its built-in mechanism (reflection?):
 
